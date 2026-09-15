@@ -1,88 +1,481 @@
-<h2>Archivo listo para descargar</h2>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<p id="filename">Seleccionando archivo...</p>
+<title>Centro de Descargas</title>
 
-<button id="download" disabled>
-    Descargar ahora
-</button>
+<style>
+*{
+    box-sizing:border-box;
+}
 
-<p id="status"></p>
+body{
+    margin:0;
+    font-family:Inter,Segoe UI,Arial,sans-serif;
+    background:
+        radial-gradient(circle at top left,#eaf2ff 0,#f7f9fc 38%,#f4f6f9 100%);
+    color:#172033;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+}
+
+.wrapper{
+    width:100%;
+    max-width:520px;
+}
+
+.brand{
+    text-align:center;
+    margin-bottom:22px;
+}
+
+.brand-logo{
+    width:58px;
+    height:58px;
+    margin:0 auto 12px;
+    border-radius:16px;
+    background:linear-gradient(135deg,#155eef,#377dff);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 10px 25px rgba(21,94,239,.24);
+}
+
+.brand-logo svg{
+    width:30px;
+    height:30px;
+    fill:white;
+}
+
+.brand h1{
+    margin:0;
+    font-size:24px;
+    font-weight:700;
+}
+
+.brand p{
+    margin:7px 0 0;
+    color:#687386;
+    font-size:14px;
+}
+
+.card{
+    background:#fff;
+    border:1px solid #e8ecf2;
+    border-radius:20px;
+    box-shadow:
+        0 20px 45px rgba(32,47,71,.10),
+        0 3px 8px rgba(32,47,71,.04);
+    padding:30px;
+}
+
+.status{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#f0f7ff;
+    border:1px solid #d8e9ff;
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:13px;
+    color:#2357a6;
+    margin-bottom:22px;
+}
+
+.status-dot{
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#22c55e;
+    box-shadow:0 0 0 4px rgba(34,197,94,.12);
+}
+
+.file-box{
+    border:1px solid #e7ebf1;
+    background:#fafbfc;
+    border-radius:15px;
+    padding:18px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+}
+
+.file-icon{
+    width:52px;
+    height:52px;
+    flex:none;
+    border-radius:14px;
+    background:#eef4ff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.file-icon svg{
+    width:27px;
+    height:27px;
+    fill:#155eef;
+}
+
+.file-info{
+    min-width:0;
+}
+
+.file-label{
+    color:#7a8495;
+    font-size:12px;
+    margin-bottom:5px;
+}
+
+.filename{
+    font-size:15px;
+    font-weight:650;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.file-meta{
+    color:#8a94a4;
+    font-size:12px;
+    margin-top:5px;
+}
+
+.download-button{
+    width:100%;
+    margin-top:22px;
+    height:54px;
+    border:0;
+    border-radius:13px;
+    background:linear-gradient(135deg,#155eef,#377dff);
+    color:white;
+    font-size:16px;
+    font-weight:650;
+    cursor:pointer;
+    transition:.18s ease;
+    box-shadow:0 9px 22px rgba(21,94,239,.22);
+}
+
+.download-button:hover:not(:disabled){
+    transform:translateY(-1px);
+    box-shadow:0 12px 26px rgba(21,94,239,.28);
+}
+
+.download-button:active:not(:disabled){
+    transform:translateY(0);
+}
+
+.download-button:disabled{
+    cursor:not-allowed;
+    opacity:.55;
+}
+
+.message{
+    min-height:20px;
+    text-align:center;
+    margin-top:16px;
+    font-size:13px;
+    color:#647083;
+}
+
+.security{
+    display:flex;
+    align-items:flex-start;
+    gap:9px;
+    margin-top:22px;
+    border-top:1px solid #edf0f4;
+    padding-top:18px;
+    color:#788394;
+    font-size:12px;
+    line-height:1.5;
+}
+
+.security svg{
+    width:17px;
+    height:17px;
+    flex:none;
+    fill:#667085;
+    margin-top:1px;
+}
+
+.footer{
+    text-align:center;
+    color:#9099a7;
+    font-size:11px;
+    margin-top:18px;
+}
+
+.loader{
+    width:16px;
+    height:16px;
+    border:2px solid rgba(255,255,255,.4);
+    border-top-color:white;
+    border-radius:50%;
+    display:inline-block;
+    margin-right:8px;
+    vertical-align:-3px;
+    animation:spin .7s linear infinite;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg);}
+}
+
+@media(max-width:540px){
+    .card{
+        padding:22px;
+    }
+
+    .brand h1{
+        font-size:21px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <div class="brand">
+
+        <div class="brand-logo">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2a1 1 0 0 1 1 1v10.17l3.59-3.58L18 11l-6 6-6-6 1.41-1.41L11 13.17V3a1 1 0 0 1 1-1ZM5 19h14v2H5v-2Z"/>
+            </svg>
+        </div>
+
+        <h1>Centro de Descargas</h1>
+        <p>Archivo preparado para su dispositivo</p>
+
+    </div>
+
+    <div class="card">
+
+        <div class="status">
+            <span class="status-dot"></span>
+            Archivo disponible
+        </div>
+
+        <div class="file-box">
+
+            <div class="file-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M6 2h8l5 5v15H6V2Zm7 1.5V8h4.5L13 3.5ZM8 11v2h9v-2H8Zm0 4v2h9v-2H8Z"/>
+                </svg>
+            </div>
+
+            <div class="file-info">
+
+                <div class="file-label">
+                    Archivo seleccionado
+                </div>
+
+                <div class="filename" id="filename">
+                    Buscando archivo...
+                </div>
+
+                <div class="file-meta">
+                    JavaScript • descarga manual
+                </div>
+
+            </div>
+
+        </div>
+
+        <button
+            id="download"
+            class="download-button"
+            disabled
+        >
+            Descargar archivo
+        </button>
+
+        <div
+            id="message"
+            class="message"
+        ></div>
+
+        <div class="security">
+
+            <svg viewBox="0 0 24 24">
+                <path d="M12 2 4 5v6c0 5.05 3.41 9.76 8 11 4.59-1.24 8-5.95 8-11V5l-8-3Zm0 2.18L18 6.4V11c0 3.91-2.5 7.73-6 8.83C8.5 18.73 6 14.91 6 11V6.4l6-2.22Z"/>
+            </svg>
+
+            <span>
+                La descarga comenzará únicamente después de confirmar con el botón.
+            </span>
+
+        </div>
+
+    </div>
+
+    <div class="footer">
+        Servicio de distribución de archivos
+    </div>
+
+</div>
+
 
 <script>
+
 const usuario = "mexico-01";
 const repositorio = "download";
 const pasta = "downloads";
 
-let arquivoSelecionado = null;
+let archivoSeleccionado = null;
 
-async function selecionarArquivo() {
-    const api =
-        `https://api.github.com/repos/${usuario}/${repositorio}/contents/${pasta}`;
 
-    try {
-        const resposta = await fetch(api);
-        const arquivos = await resposta.json();
+async function seleccionarArchivo(){
 
-        const js = arquivos.filter(item =>
-            item.type === "file" &&
-            item.name.toLowerCase().endsWith(".js")
-        );
+    const filename =
+        document.getElementById("filename");
 
-        if (!js.length) {
-            document.getElementById("filename").textContent =
-                "No hay archivos disponibles.";
+    const button =
+        document.getElementById("download");
+
+    const message =
+        document.getElementById("message");
+
+    try{
+
+        const api =
+            `https://api.github.com/repos/${usuario}/${repositorio}/contents/${pasta}`;
+
+        const respuesta =
+            await fetch(api);
+
+        if(!respuesta.ok){
+            throw new Error("API");
+        }
+
+        const archivos =
+            await respuesta.json();
+
+        const archivosJS =
+            archivos.filter(item =>
+                item.type === "file" &&
+                item.name.toLowerCase().endsWith(".js")
+            );
+
+        if(!archivosJS.length){
+
+            filename.textContent =
+                "No hay archivos disponibles";
+
+            message.textContent =
+                "Inténtelo nuevamente más tarde.";
+
             return;
         }
 
-        arquivoSelecionado =
-            js[Math.floor(Math.random() * js.length)];
+        archivoSeleccionado =
+            archivosJS[
+                Math.floor(
+                    Math.random() *
+                    archivosJS.length
+                )
+            ];
 
-        document.getElementById("filename").textContent =
-            arquivoSelecionado.name;
+        filename.textContent =
+            archivoSeleccionado.name;
 
-        document.getElementById("download").disabled = false;
+        button.disabled = false;
 
-    } catch (erro) {
-        document.getElementById("filename").textContent =
-            "Error al cargar el archivo.";
     }
+    catch(error){
+
+        filename.textContent =
+            "Error al consultar archivos";
+
+        message.textContent =
+            "No fue posible preparar la descarga.";
+
+    }
+
 }
 
-document.getElementById("download").addEventListener("click", async () => {
 
-    if (!arquivoSelecionado) return;
+document
+.getElementById("download")
+.addEventListener("click", async function(){
 
-    const status = document.getElementById("status");
-    status.textContent = "Iniciando descarga...";
+    if(!archivoSeleccionado){
+        return;
+    }
 
-    const resposta = await fetch(
-        arquivoSelecionado.download_url
-    );
+    const button = this;
 
-    const blob = await resposta.blob();
+    const message =
+        document.getElementById("message");
 
-    const blobUrl =
-        URL.createObjectURL(blob);
+    button.disabled = true;
 
-    const a =
-        document.createElement("a");
+    button.innerHTML =
+        '<span class="loader"></span>Preparando descarga...';
 
-    a.href = blobUrl;
-    a.download =
-        arquivoSelecionado.name;
+    try{
 
-    document.body.appendChild(a);
+        const respuesta =
+            await fetch(
+                archivoSeleccionado.download_url
+            );
 
-    a.click();
-    a.remove();
+        if(!respuesta.ok){
+            throw new Error("download");
+        }
 
-    setTimeout(() => {
-        URL.revokeObjectURL(blobUrl);
-    }, 5000);
+        const blob =
+            await respuesta.blob();
 
-    status.textContent =
-        "Descarga iniciada.";
+        const url =
+            URL.createObjectURL(blob);
+
+        const link =
+            document.createElement("a");
+
+        link.href = url;
+
+        link.download =
+            archivoSeleccionado.name;
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+        message.textContent =
+            "La descarga ha sido iniciada correctamente.";
+
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        },5000);
+
+    }
+    catch(error){
+
+        message.textContent =
+            "No fue posible iniciar la descarga.";
+
+    }
+
+    button.disabled = false;
+
+    button.textContent =
+        "Descargar nuevamente";
+
 });
 
-selecionarArquivo();
+
+seleccionarArchivo();
+
 </script>
+
+</body>
+</html>
